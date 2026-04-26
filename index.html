@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Matchbox Game - Admin + User Panel | Auto Login</titl<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Matchbox Game - Admin + User Panel | Auto Login Both</title>
+    <title>Matchbox Game - Player vs Bot | Buy Cards</title>
     <style>
         * {
             user-select: none;
@@ -21,7 +16,7 @@
             padding: 16px;
         }
         .container {
-            max-width: 1300px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         .tabs {
@@ -54,39 +49,6 @@
         .panel.active {
             display: block;
         }
-        .admin-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .admin-card {
-            background: #f5ebd3;
-            border-radius: 30px;
-            padding: 15px;
-            flex: 1;
-            min-width: 250px;
-        }
-        .btn {
-            background: #f0a035;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .btn-danger {
-            background: #a5522a;
-            color: white;
-        }
-        .user-item {
-            background: #fff5e2;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
         .user-info {
             background: #b58750;
             border-radius: 40px;
@@ -96,486 +58,50 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-        }
-        .balance {
-            background: #2f4a22;
-            padding: 8px 20px;
-            border-radius: 40px;
-            color: #ffefb0;
-        }
-        .game-area {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .column {
-            background: #b58750;
-            border-radius: 35px;
-            padding: 15px;
-            width: 45%;
-            min-width: 250px;
-            text-align: center;
-        }
-        .top-card {
-            background: #fff5e2;
-            border-radius: 20px;
-            padding: 15px;
-            width: 120px;
-            margin: 10px auto;
-        }
-        .action-btn {
-            background: #f0a035;
-            font-size: 1.3rem;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 15px auto;
-            display: inline-block;
-            border: none;
-            font-weight: bold;
-        }
-        input, select {
-            padding: 8px 12px;
-            border-radius: 30px;
-            border: none;
-            margin: 5px;
-        }
-        .match-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: gold;
-            padding: 20px 40px;
-            border-radius: 60px;
-            font-weight: bold;
-            z-index: 1000;
-            text-align: center;
-        }
-        .admin-login-bar {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
         }
-        .admin-logged-status {
+        .balance {
             background: #2f4a22;
-            padding: 5px 12px;
+            padding: 8px 20px;
             border-radius: 40px;
             color: #ffefb0;
-            font-size: 0.8rem;
-        }
-        @media (max-width: 700px) {
-            .column { width: 100%; }
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="user">🎮 यूजर पैनल</button>
-        <button class="tab-btn" data-tab="admin">👑 एडमिन पैनल</button>
-    </div>
-
-    <!-- USER PANEL -->
-    <div id="userPanel" class="panel active">
-        <div id="userLoginArea">
-            <div style="text-align:center; padding:20px;">
-                <h2>🎲 यूजर लॉगिन</h2>
-                <input type="text" id="loginUsername" placeholder="यूजरनेम">
-                <button class="btn" id="loginBtn">लॉगिन / नया अकाउंट</button>
-                <p>नए यूजर को 10 फ्री कार्ड | Refresh पर login रहेगा ✅</p>
-            </div>
-        </div>
-        <div id="userGameArea" style="display:none;">
-            <div class="user-info">
-                <span>👤 <span id="currentUsername">-</span></span>
-                <span class="balance">📦 कार्ड: <span id="userBalance">0</span></span>
-                <span>🏆 जीत: <span id="userWins">0</span></span>
-                <button class="btn" id="logoutBtn">लॉगआउट</button>
-            </div>
-            <div class="game-area">
-                <div class="column">
-                    <h3>🎴 खिलाड़ी 1</h3>
-                    <div id="col1Top" class="top-card">⬜ खाली</div>
-                    <div id="col1Hint"></div>
-                </div>
-                <div class="column">
-                    <h3>🎴 खिलाड़ी 2</h3>
-                    <div id="col2Top" class="top-card">⬜ खाली</div>
-                    <div id="col2Hint"></div>
-                </div>
-            </div>
-            <div style="text-align:center;">
-                <button class="action-btn" id="playBtn">🎴 रखो</button>
-            </div>
-            <div id="gameMsg" style="text-align:center; margin-top:15px; background:#201f12cc; padding:10px; border-radius:40px; color:#ffefbc;">👇 'रखो' दबाएं | हर चाल पर 1 कार्ड कटेगा | जीतने पर +कार्ड</div>
-        </div>
-    </div>
-
-    <!-- ADMIN PANEL -->
-    <div id="adminPanel" class="panel">
-        <div style="text-align:center; margin-bottom:20px;">
-            <h2>👑 एडमिन पैनल</h2>
-            <div id="adminNotLogged" class="admin-login-bar">
-                <input type="password" id="adminPass" placeholder="एडमिन पासवर्ड">
-                <button class="btn" id="adminLoginBtn">लॉगिन</button>
-            </div>
-            <div id="adminLogged" style="display:none;">
-                <span class="admin-logged-status">✅ एडमिन लॉगिन है</span>
-                <button class="btn" id="adminLogoutBtn">एडमिन लॉगआउट</button>
-            </div>
-        </div>
-        <div id="adminContent" style="display:none;">
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h3>➕ यूजर को कार्ड दें</h3>
-                    <input type="text" id="addUser" placeholder="यूजरनेम">
-                    <input type="number" id="addCards" placeholder="कार्ड" value="10">
-                    <button class="btn" id="addCardsBtn">कार्ड दें</button>
-                </div>
-                <div class="admin-card">
-                    <h3>📊 सभी यूजर</h3>
-                    <div id="userList"></div>
-                </div>
-                <div class="admin-card">
-                    <h3>⚙️ सेटिंग</h3>
-                    <label>जीत पर कटौती: </label>
-                    <input type="number" id="cutPerWin" value="1">
-                    <button class="btn" id="saveSettingsBtn">सेव करें</button>
-                    <button class="btn btn-danger" id="resetAllBtn">सारा डाटा रीसेट</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let users = {};
-    let currentUser = null;
-    let adminLoggedIn = false;
-    let winCut = 1;
-    let gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
-    let currentGameUser = null;
-    
-    const BRANDS = ["Rajshree", "Chameli", "Mangaldeep", "786", "Kohinoor", "Shalimar"];
-    function randomCard() {
-        let brand = BRANDS[Math.floor(Math.random() * BRANDS.length)];
-        let face = Math.random() < 0.5 ? "🔥 फ्रंट" : "⚙️ बैक";
-        return { brand, face, icon: face === "🔥 फ्रंट" ? "🕉️" : "📦" };
-    }
-    
-    function loadData() {
-        let saved = localStorage.getItem("matchbox_game_data");
-        if(saved) {
-            let data = JSON.parse(saved);
-            users = data.users || {};
-            winCut = data.winCut !== undefined ? data.winCut : 1;
-        }
-        if(Object.keys(users).length === 0) {
-            users["raj"] = { cards: 25, wins: 3 };
-            users["sam"] = { cards: 15, wins: 1 };
-        }
-        saveData();
-    }
-    
-    function saveData() {
-        localStorage.setItem("matchbox_game_data", JSON.stringify({ users, winCut, adminLoggedIn }));
-    }
-    
-    // Save current user session
-    function saveCurrentUser(username) {
-        if(username) localStorage.setItem("current_loggedin_user", username);
-        else localStorage.removeItem("current_loggedin_user");
-    }
-    
-    function getSavedUser() {
-        return localStorage.getItem("current_loggedin_user");
-    }
-    
-    // Save admin session
-    function saveAdminSession(status) {
-        localStorage.setItem("admin_logged_in", status ? "true" : "false");
-    }
-    
-    function getAdminSession() {
-        return localStorage.getItem("admin_logged_in") === "true";
-    }
-    
-    function renderCardUI(card) {
-        if(!card) return `<div>⬜ खाली</div>`;
-        return `<div style="font-size:1.5rem;">${card.icon}</div><div>${card.brand}</div><div style="font-size:0.7rem;">${card.face}</div>`;
-    }
-    
-    function updateGameUI() {
-        let col1Div = document.getElementById("col1Top");
-        let col1Hint = document.getElementById("col1Hint");
-        if(gameState.col1.length === 0) {
-            col1Div.innerHTML = `<div>⬜ कोई कार्ड नहीं</div>`;
-            col1Hint.innerHTML = "";
-        } else {
-            let top = gameState.col1[gameState.col1.length-1];
-            col1Div.innerHTML = renderCardUI(top);
-            if(gameState.col1.length > 1) col1Hint.innerHTML = `📚 +${gameState.col1.length-1} नीचे`;
-            else col1Hint.innerHTML = `✨ सिर्फ एक`;
-        }
-        
-        let col2Div = document.getElementById("col2Top");
-        let col2Hint = document.getElementById("col2Hint");
-        if(gameState.col2.length === 0) {
-            col2Div.innerHTML = `<div>⬜ कोई कार्ड नहीं</div>`;
-            col2Hint.innerHTML = "";
-        } else {
-            let top = gameState.col2[gameState.col2.length-1];
-            col2Div.innerHTML = renderCardUI(top);
-            if(gameState.col2.length > 1) col2Hint.innerHTML = `📚 +${gameState.col2.length-1} नीचे`;
-            else col2Hint.innerHTML = `✨ सिर्फ एक`;
-        }
-    }
-    
-    function showMatchPopup(card1, card2, winner) {
-        let popup = document.createElement("div");
-        popup.className = "match-popup";
-        popup.innerHTML = `<div>🏆 खिलाड़ी ${winner} जीता! -${winCut} कार्ड 🏆</div>`;
-        document.body.appendChild(popup);
-        setTimeout(() => popup.remove(), 2000);
-    }
-    
-    function applyMatch(winnerPlayer) {
-        let allCards = [...gameState.col1, ...gameState.col2];
-        let winAmount = allCards.length;
-        let userObj = users[currentGameUser];
-        if(userObj) {
-            let newCards = userObj.cards + winAmount - winCut;
-            if(newCards < 0) newCards = 0;
-            userObj.cards = newCards;
-            userObj.wins = (userObj.wins || 0) + 1;
-            saveData();
-            document.getElementById("userBalance").innerText = userObj.cards;
-            document.getElementById("userWins").innerText = userObj.wins;
-        }
-        let top1 = gameState.col1[gameState.col1.length-1];
-        let top2 = gameState.col2[gameState.col2.length-1];
-        showMatchPopup(top1, top2, winnerPlayer);
-        gameState.col1 = [];
-        gameState.col2 = [];
-        gameState.currentTurn = 1;
-        updateGameUI();
-        document.getElementById("gameMsg").innerHTML = `💥 मैच! खिलाड़ी ${winnerPlayer} जीता | -${winCut} कार्ड 💥`;
-    }
-    
-    function placeCard() {
-        if(!currentGameUser || !users[currentGameUser]) return;
-        if(users[currentGameUser].cards <= 0) {
-            document.getElementById("gameMsg").innerHTML = "⚠️ कोई कार्ड नहीं! एडमिन से कार्ड लो ⚠️";
-            return;
-        }
-        let newCard = randomCard();
-        if(gameState.currentTurn === 1) gameState.col1.push(newCard);
-        else gameState.col2.push(newCard);
-        
-        users[currentGameUser].cards -= 1;
-        if(users[currentGameUser].cards < 0) users[currentGameUser].cards = 0;
-        saveData();
-        document.getElementById("userBalance").innerText = users[currentGameUser].cards;
-        updateGameUI();
-        
-        if(gameState.col1.length > 0 && gameState.col2.length > 0) {
-            let top1 = gameState.col1[gameState.col1.length-1];
-            let top2 = gameState.col2[gameState.col2.length-1];
-            if(top1.brand === top2.brand && top1.face === top2.face) {
-                applyMatch(gameState.currentTurn);
-                return;
-            }
-        }
-        gameState.currentTurn = gameState.currentTurn === 1 ? 2 : 1;
-        document.getElementById("gameMsg").innerHTML = `अब खिलाड़ी ${gameState.currentTurn} की बारी`;
-    }
-    
-    function refreshUserList() {
-        let listDiv = document.getElementById("userList");
-        listDiv.innerHTML = "";
-        for(let [name, data] of Object.entries(users)) {
-            let div = document.createElement("div");
-            div.className = "user-item";
-            div.innerHTML = `<span><strong>${name}</strong> | 📦 ${data.cards} | 🏆 ${data.wins || 0}</span>
-                <div><button class="btn" onclick="adminAddCards('${name}', 10)">+10</button>
-                <button class="btn btn-danger" onclick="adminRemoveUser('${name}')">हटाएं</button></div>`;
-            listDiv.appendChild(div);
-        }
-    }
-    
-    window.adminAddCards = function(name, amt) {
-        if(users[name]) { users[name].cards += amt; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("userBalance").innerText = users[name].cards; }
-    };
-    window.adminRemoveUser = function(name) { delete users[name]; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("logoutBtn").click(); };
-    
-    function updateAdminUI() {
-        if(adminLoggedIn) {
-            document.getElementById("adminNotLogged").style.display = "none";
-            document.getElementById("adminLogged").style.display = "block";
-            document.getElementById("adminContent").style.display = "block";
-            refreshUserList();
-        } else {
-            document.getElementById("adminNotLogged").style.display = "flex";
-            document.getElementById("adminLogged").style.display = "none";
-            document.getElementById("adminContent").style.display = "none";
-        }
-    }
-    
-    function doLogin(username) {
-        if(!users[username]) users[username] = { cards: 10, wins: 0 };
-        currentUser = currentGameUser = username;
-        saveCurrentUser(username);
-        document.getElementById("currentUsername").innerText = username;
-        document.getElementById("userBalance").innerText = users[username].cards;
-        document.getElementById("userWins").innerText = users[username].wins || 0;
-        document.getElementById("userLoginArea").style.display = "none";
-        document.getElementById("userGameArea").style.display = "block";
-        gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
-        updateGameUI();
-        saveData();
-    }
-    
-    function doLogout() {
-        currentUser = currentGameUser = null;
-        saveCurrentUser(null);
-        document.getElementById("userLoginArea").style.display = "block";
-        document.getElementById("userGameArea").style.display = "none";
-        gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
-    }
-    
-    function doAdminLogin() {
-        adminLoggedIn = true;
-        saveAdminSession(true);
-        saveData();
-        updateAdminUI();
-    }
-    
-    function doAdminLogout() {
-        adminLoggedIn = false;
-        saveAdminSession(false);
-        saveData();
-        updateAdminUI();
-    }
-    
-    document.getElementById("loginBtn").onclick = () => {
-        let name = document.getElementById("loginUsername").value.trim();
-        if(!name) return;
-        doLogin(name);
-    };
-    document.getElementById("logoutBtn").onclick = doLogout;
-    document.getElementById("playBtn").onclick = placeCard;
-    document.getElementById("adminLoginBtn").onclick = () => {
-        if(document.getElementById("adminPass").value === "admin123") {
-            doAdminLogin();
-        } else alert("गलत पासवर्ड");
-    };
-    document.getElementById("adminLogoutBtn").onclick = doAdminLogout;
-    document.getElementById("addCardsBtn").onclick = () => {
-        let name = document.getElementById("addUser").value.trim();
-        let qty = parseInt(document.getElementById("addCards").value);
-        if(name && users[name] && qty>0) { users[name].cards += qty; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("userBalance").innerText = users[name].cards; }
-    };
-    document.getElementById("saveSettingsBtn").onclick = () => { winCut = parseInt(document.getElementById("cutPerWin").value); saveData(); alert("सेटिंग सेव हो गई"); };
-    document.getElementById("resetAllBtn").onclick = () => { 
-        if(confirm("सारा डाटा डिलीट हो जाएगा!")) {
-            localStorage.removeItem("matchbox_game_data");
-            localStorage.removeItem("current_loggedin_user");
-            localStorage.removeItem("admin_logged_in");
-            users = {}; winCut = 1;
-            loadData();
-            doLogout();
-            doAdminLogout();
-            refreshUserList();
-            alert("रीसेट हो गया");
-        }
-    };
-    
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-            document.getElementById(btn.dataset.tab + "Panel").classList.add("active");
-            if(btn.dataset.tab === "admin" && adminLoggedIn) refreshUserList();
-        };
-    });
-    
-    loadData();
-    
-    // Auto login user if saved
-    let savedUser = getSavedUser();
-    if(savedUser && users[savedUser]) {
-        doLogin(savedUser);
-    }
-    
-    // Auto login admin if saved session
-    if(getAdminSession()) {
-        adminLoggedIn = true;
-        updateAdminUI();
-    }
-</script>
-</body>
-</html>e>
-    <style>
-        * {
-            user-select: none;
-            box-sizing: border-box;
-        }
-        body {
-            background: linear-gradient(145deg, #1a3d2e, #0e2a1c);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0;
-            padding: 16px;
-        }
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            background: #2f4a22;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            color: #ffe3a5;
             font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
         }
-        .tab-btn.active {
-            background: #f0a035;
-            color: #2c1a0a;
-        }
-        .panel {
-            display: none;
-            background: #e8dbbf;
-            border-radius: 50px;
-            padding: 20px;
-        }
-        .panel.active {
-            display: block;
-        }
-        .admin-grid {
+        .game-area {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
+            justify-content: center;
         }
-        .admin-card {
-            background: #f5ebd3;
-            border-radius: 30px;
+        .column {
+            background: #b58750;
+            border-radius: 35px;
             padding: 15px;
-            flex: 1;
-            min-width: 250px;
+            width: 45%;
+            min-width: 280px;
+            text-align: center;
+        }
+        .top-card {
+            background: #fff5e2;
+            border-radius: 20px;
+            padding: 15px;
+            width: 120px;
+            margin: 10px auto;
+            box-shadow: 0 5px 0 #8b551f;
+        }
+        .action-btn {
+            background: #f0a035;
+            font-size: 1.3rem;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            border: none;
+            font-weight: bold;
+        }
+        .buy-btn {
+            background: #2f4a22;
+            color: #ffefb0;
         }
         .btn {
             background: #f0a035;
@@ -589,7 +115,7 @@
             background: #a5522a;
             color: white;
         }
-        .user-item {
+        .request-item {
             background: #fff5e2;
             padding: 10px;
             margin: 8px 0;
@@ -597,60 +123,6 @@
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
-        }
-        .user-info {
-            background: #b58750;
-            border-radius: 40px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .balance {
-            background: #2f4a22;
-            padding: 8px 20px;
-            border-radius: 40px;
-            color: #ffefb0;
-        }
-        .game-area {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .column {
-            background: #b58750;
-            border-radius: 35px;
-            padding: 15px;
-            width: 45%;
-            min-width: 250px;
-            text-align: center;
-        }
-        .top-card {
-            background: #fff5e2;
-            border-radius: 20px;
-            padding: 15px;
-            width: 120px;
-            margin: 10px auto;
-        }
-        .action-btn {
-            background: #f0a035;
-            font-size: 1.3rem;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 15px auto;
-            display: inline-block;
-            border: none;
-            font-weight: bold;
-        }
-        input, select {
-            padding: 8px 12px;
-            border-radius: 30px;
-            border: none;
-            margin: 5px;
         }
         .match-popup {
             position: fixed;
@@ -664,6 +136,16 @@
             z-index: 1000;
             text-align: center;
         }
+        input, select {
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: none;
+            margin: 5px;
+        }
+        .card-count-hidden {
+            filter: blur(5px);
+            cursor: pointer;
+        }
         @media (max-width: 700px) {
             .column { width: 100%; }
         }
@@ -672,7 +154,7 @@
 <body>
 <div class="container">
     <div class="tabs">
-        <button class="tab-btn active" data-tab="user">🎮 यूजर पैनल</button>
+        <button class="tab-btn active" data-tab="user">🎮 गेम</button>
         <button class="tab-btn" data-tab="admin">👑 एडमिन पैनल</button>
     </div>
 
@@ -683,7 +165,7 @@
                 <h2>🎲 यूजर लॉगिन</h2>
                 <input type="text" id="loginUsername" placeholder="यूजरनेम">
                 <button class="btn" id="loginBtn">लॉगिन / नया अकाउंट</button>
-                <p>नए यूजर को 10 फ्री कार्ड | Refresh पर भी login रहेगा ✅</p>
+                <p>नए यूजर को 20 फ्री कार्ड | Bot के पास unlimited cards 🎯</p>
             </div>
         </div>
         <div id="userGameArea" style="display:none;">
@@ -691,24 +173,31 @@
                 <span>👤 <span id="currentUsername">-</span></span>
                 <span class="balance">📦 कार्ड: <span id="userBalance">0</span></span>
                 <span>🏆 जीत: <span id="userWins">0</span></span>
+                <button class="btn buy-btn" id="buyCardBtn">🪙 कार्ड खरीदें (20 card = 1 coin)</button>
+                <button class="btn" id="sendRequestBtn">📤 एडमिन को रिक्वेस्ट भेजें</button>
                 <button class="btn" id="logoutBtn">लॉगआउट</button>
             </div>
+            
             <div class="game-area">
                 <div class="column">
-                    <h3>🎴 खिलाड़ी 1</h3>
-                    <div id="col1Top" class="top-card">⬜ खाली</div>
-                    <div id="col1Hint"></div>
+                    <h3>🎴 आप (खिलाड़ी)</h3>
+                    <div id="playerTop" class="top-card">⬜ खाली</div>
+                    <div id="playerHint"></div>
+                    <div style="margin-top:10px;">📦 आपके कार्ड: <span id="playerCardsCount">0</span></div>
                 </div>
                 <div class="column">
-                    <h3>🎴 खिलाड़ी 2</h3>
-                    <div id="col2Top" class="top-card">⬜ खाली</div>
-                    <div id="col2Hint"></div>
+                    <h3>🤖 BOT</h3>
+                    <div id="botTop" class="top-card">⬜ खाली</div>
+                    <div id="botHint"></div>
+                    <div style="margin-top:10px; opacity:0.5;">📦 BOT कार्ड: ??? (unlimited)</div>
                 </div>
             </div>
+            
             <div style="text-align:center;">
-                <button class="action-btn" id="playBtn">🎴 रखो</button>
+                <button class="action-btn" id="playBtn">🎴 कार्ड रखो</button>
+                <button class="action-btn" id="resetGameBtn">🔄 नई गेम</button>
             </div>
-            <div id="gameMsg" style="text-align:center; margin-top:15px; background:#201f12cc; padding:10px; border-radius:40px; color:#ffefbc;">👇 'रखो' दबाएं | हर चाल पर 1 कार्ड कटेगा | जीतने पर +कार्ड</div>
+            <div id="gameMsg" style="text-align:center; margin-top:15px; background:#201f12cc; padding:10px; border-radius:40px; color:#ffefbc;">👇 'कार्ड रखो' दबाएं | Bot अपने आप खेलेगा</div>
         </div>
     </div>
 
@@ -720,22 +209,20 @@
             <button class="btn" id="adminLoginBtn">लॉगिन</button>
         </div>
         <div id="adminContent" style="display:none;">
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h3>➕ यूजर को कार्ड दें</h3>
-                    <input type="text" id="addUser" placeholder="यूजरनेम">
-                    <input type="number" id="addCards" placeholder="कार्ड" value="10">
-                    <button class="btn" id="addCardsBtn">कार्ड दें</button>
+            <div class="admin-grid" style="display:flex; flex-wrap:wrap; gap:20px;">
+                <div class="admin-card" style="background:#f5ebd3; border-radius:30px; padding:15px; flex:1;">
+                    <h3>📋 पेंडिंग रिक्वेस्ट</h3>
+                    <div id="pendingRequests"></div>
                 </div>
-                <div class="admin-card">
+                <div class="admin-card" style="background:#f5ebd3; border-radius:30px; padding:15px; flex:1;">
                     <h3>📊 सभी यूजर</h3>
                     <div id="userList"></div>
                 </div>
-                <div class="admin-card">
-                    <h3>⚙️ सेटिंग</h3>
-                    <label>जीत पर कटौती: </label>
-                    <input type="number" id="cutPerWin" value="1">
-                    <button class="btn" id="saveSettingsBtn">सेव करें</button>
+                <div class="admin-card" style="background:#f5ebd3; border-radius:30px; padding:15px; flex:1;">
+                    <h3>➕ यूजर को कार्ड दें</h3>
+                    <input type="text" id="addUser" placeholder="यूजरनेम">
+                    <input type="number" id="addCards" placeholder="कार्ड" value="20">
+                    <button class="btn" id="addCardsBtn">कार्ड दें</button>
                     <button class="btn btn-danger" id="resetAllBtn">सारा डाटा रीसेट</button>
                 </div>
             </div>
@@ -744,46 +231,54 @@
 </div>
 
 <script>
+    // Data
     let users = {};
     let currentUser = null;
     let adminLoggedIn = false;
-    let winCut = 1;
-    let gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
+    let pendingRequests = [];
+    
+    // Game state (Player vs Bot)
+    let playerCol = [];    // player के रखे कार्ड
+    let botCol = [];       // bot के रखे कार्ड
+    let currentTurn = "player";  // player या bot
+    let gameActive = true;
     let currentGameUser = null;
+    let botCardCount = 999;  // Bot के पास unlimited cards (just for show)
     
     const BRANDS = ["Rajshree", "Chameli", "Mangaldeep", "786", "Kohinoor", "Shalimar"];
+    const FACES = ["🔥 फ्रंट", "⚙️ बैक"];
+    
     function randomCard() {
         let brand = BRANDS[Math.floor(Math.random() * BRANDS.length)];
-        let face = Math.random() < 0.5 ? "🔥 फ्रंट" : "⚙️ बैक";
-        return { brand, face, icon: face === "🔥 फ्रंट" ? "🕉️" : "📦" };
+        let face = FACES[Math.floor(Math.random() * FACES.length)];
+        let icon = face === "🔥 फ्रंट" ? "🕉️" : "📦";
+        return { brand, face, icon };
     }
     
     function loadData() {
-        let saved = localStorage.getItem("matchbox_game_data");
+        let saved = localStorage.getItem("matchbox_game_data_v2");
         if(saved) {
             let data = JSON.parse(saved);
             users = data.users || {};
-            winCut = data.winCut !== undefined ? data.winCut : 1;
+            pendingRequests = data.pendingRequests || [];
         }
         if(Object.keys(users).length === 0) {
-            users["raj"] = { cards: 25, wins: 3 };
-            users["sam"] = { cards: 15, wins: 1 };
+            users["demo"] = { cards: 20, wins: 0 };
         }
         saveData();
     }
     
     function saveData() {
-        localStorage.setItem("matchbox_game_data", JSON.stringify({ users, winCut }));
+        localStorage.setItem("matchbox_game_data_v2", JSON.stringify({ users, pendingRequests }));
     }
     
-    // Save current login session
     function saveCurrentUser(username) {
-        if(username) localStorage.setItem("current_loggedin_user", username);
-        else localStorage.removeItem("current_loggedin_user");
+        if(username) localStorage.setItem("current_player_user", username);
+        else localStorage.removeItem("current_player_user");
     }
     
     function getSavedUser() {
-        return localStorage.getItem("current_loggedin_user");
+        return localStorage.getItem("current_player_user");
     }
     
     function renderCardUI(card) {
@@ -792,88 +287,155 @@
     }
     
     function updateGameUI() {
-        let col1Div = document.getElementById("col1Top");
-        let col1Hint = document.getElementById("col1Hint");
-        if(gameState.col1.length === 0) {
-            col1Div.innerHTML = `<div>⬜ कोई कार्ड नहीं</div>`;
-            col1Hint.innerHTML = "";
+        // Player column
+        let playerDiv = document.getElementById("playerTop");
+        let playerHint = document.getElementById("playerHint");
+        if(playerCol.length === 0) {
+            playerDiv.innerHTML = `<div>⬜ कोई कार्ड नहीं</div>`;
+            playerHint.innerHTML = "";
         } else {
-            let top = gameState.col1[gameState.col1.length-1];
-            col1Div.innerHTML = renderCardUI(top);
-            if(gameState.col1.length > 1) col1Hint.innerHTML = `📚 +${gameState.col1.length-1} नीचे`;
-            else col1Hint.innerHTML = `✨ सिर्फ एक`;
+            let top = playerCol[playerCol.length-1];
+            playerDiv.innerHTML = renderCardUI(top);
+            if(playerCol.length > 1) playerHint.innerHTML = `📚 +${playerCol.length-1} नीचे`;
+            else playerHint.innerHTML = `✨ सिर्फ एक`;
         }
         
-        let col2Div = document.getElementById("col2Top");
-        let col2Hint = document.getElementById("col2Hint");
-        if(gameState.col2.length === 0) {
-            col2Div.innerHTML = `<div>⬜ कोई कार्ड नहीं</div>`;
-            col2Hint.innerHTML = "";
+        // Bot column
+        let botDiv = document.getElementById("botTop");
+        let botHint = document.getElementById("botHint");
+        if(botCol.length === 0) {
+            botDiv.innerHTML = `<div>⬜ कोई कार्ड नहीं</div>`;
+            botHint.innerHTML = "";
         } else {
-            let top = gameState.col2[gameState.col2.length-1];
-            col2Div.innerHTML = renderCardUI(top);
-            if(gameState.col2.length > 1) col2Hint.innerHTML = `📚 +${gameState.col2.length-1} नीचे`;
-            else col2Hint.innerHTML = `✨ सिर्फ एक`;
+            let top = botCol[botCol.length-1];
+            botDiv.innerHTML = renderCardUI(top);
+            if(botCol.length > 1) botHint.innerHTML = `📚 +${botCol.length-1} नीचे`;
+            else botHint.innerHTML = `✨ सिर्फ एक`;
         }
+        
+        document.getElementById("playerCardsCount").innerText = users[currentGameUser]?.cards || 0;
     }
     
-    function showMatchPopup(card1, card2, winner) {
+    function showMatchPopup(winner) {
         let popup = document.createElement("div");
         popup.className = "match-popup";
-        popup.innerHTML = `<div>🏆 खिलाड़ी ${winner} जीता! -${winCut} कार्ड 🏆</div>`;
+        popup.innerHTML = `<div>🏆 ${winner === "player" ? "आप जीत गए!" : "Bot जीत गया!"} 🏆</div>`;
         document.body.appendChild(popup);
         setTimeout(() => popup.remove(), 2000);
     }
     
-    function applyMatch(winnerPlayer) {
-        let allCards = [...gameState.col1, ...gameState.col2];
-        let winAmount = allCards.length;
-        let userObj = users[currentGameUser];
-        if(userObj) {
-            let newCards = userObj.cards + winAmount - winCut;
-            if(newCards < 0) newCards = 0;
-            userObj.cards = newCards;
-            userObj.wins = (userObj.wins || 0) + 1;
-            saveData();
-            document.getElementById("userBalance").innerText = userObj.cards;
-            document.getElementById("userWins").innerText = userObj.wins;
+    function checkMatch() {
+        if(playerCol.length > 0 && botCol.length > 0) {
+            let playerTop = playerCol[playerCol.length-1];
+            let botTop = botCol[botCol.length-1];
+            if(playerTop.brand === botTop.brand && playerTop.face === botTop.face) {
+                // Match! Winner is whoever played last
+                let winner = currentTurn === "player" ? "player" : "bot";
+                let allCards = [...playerCol, ...botCol];
+                let winAmount = allCards.length;
+                
+                if(winner === "player") {
+                    // Player wins all cards
+                    if(users[currentGameUser]) {
+                        users[currentGameUser].cards += winAmount;
+                        users[currentGameUser].wins = (users[currentGameUser].wins || 0) + 1;
+                        saveData();
+                        document.getElementById("userBalance").innerText = users[currentGameUser].cards;
+                        document.getElementById("userWins").innerText = users[currentGameUser].wins;
+                    }
+                } else {
+                    // Bot wins - player loses cards (but bot doesn't have a balance)
+                    if(users[currentGameUser]) {
+                        // Bot takes cards - player loses them (already deducted when playing)
+                        // No additional deduction needed since cards were already deducted when played
+                    }
+                }
+                
+                showMatchPopup(winner);
+                playerCol = [];
+                botCol = [];
+                currentTurn = "player";
+                updateGameUI();
+                document.getElementById("gameMsg").innerHTML = `💥 मैच! ${winner === "player" ? "आप जीते!" : "Bot जीता!"} 💥`;
+                return true;
+            }
         }
-        let top1 = gameState.col1[gameState.col1.length-1];
-        let top2 = gameState.col2[gameState.col2.length-1];
-        showMatchPopup(top1, top2, winnerPlayer);
-        gameState.col1 = [];
-        gameState.col2 = [];
-        gameState.currentTurn = 1;
-        updateGameUI();
-        document.getElementById("gameMsg").innerHTML = `💥 मैच! खिलाड़ी ${winnerPlayer} जीता | -${winCut} कार्ड 💥`;
+        return false;
     }
     
-    function placeCard() {
-        if(!currentGameUser || !users[currentGameUser]) return;
-        if(users[currentGameUser].cards <= 0) {
-            document.getElementById("gameMsg").innerHTML = "⚠️ कोई कार्ड नहीं! एडमिन से कार्ड लो ⚠️";
+    function botPlay() {
+        if(!gameActive) return;
+        if(currentTurn !== "bot") return;
+        if(!users[currentGameUser]) return;
+        
+        setTimeout(() => {
+            if(currentTurn !== "bot") return;
+            
+            // Bot plays a card
+            let botCard = randomCard();
+            botCol.push(botCard);
+            updateGameUI();
+            
+            // Check match
+            let matched = checkMatch();
+            
+            if(!matched) {
+                currentTurn = "player";
+                document.getElementById("gameMsg").innerHTML = "🤖 Bot ने कार्ड रखा | अब आपकी बारी";
+                updateGameUI();
+            } else {
+                if(gameActive) {
+                    currentTurn = "player";
+                    updateGameUI();
+                }
+            }
+        }, 600);
+    }
+    
+    function playerPlay() {
+        if(!gameActive) return;
+        if(currentTurn !== "player") {
+            document.getElementById("gameMsg").innerHTML = "⏳ Bot की बारी है, थोड़ा रुको...";
             return;
         }
-        let newCard = randomCard();
-        if(gameState.currentTurn === 1) gameState.col1.push(newCard);
-        else gameState.col2.push(newCard);
+        if(!users[currentGameUser]) return;
+        if(users[currentGameUser].cards <= 0) {
+            document.getElementById("gameMsg").innerHTML = "⚠️ आपके पास कोई कार्ड नहीं! कार्ड खरीदें ⚠️";
+            return;
+        }
         
+        // Player plays a card
+        let playerCard = randomCard();
+        playerCol.push(playerCard);
+        
+        // Deduct 1 card from player
         users[currentGameUser].cards -= 1;
         if(users[currentGameUser].cards < 0) users[currentGameUser].cards = 0;
         saveData();
         document.getElementById("userBalance").innerText = users[currentGameUser].cards;
         updateGameUI();
         
-        if(gameState.col1.length > 0 && gameState.col2.length > 0) {
-            let top1 = gameState.col1[gameState.col1.length-1];
-            let top2 = gameState.col2[gameState.col2.length-1];
-            if(top1.brand === top2.brand && top1.face === top2.face) {
-                applyMatch(gameState.currentTurn);
-                return;
-            }
+        // Check match
+        let matched = checkMatch();
+        
+        if(!matched) {
+            currentTurn = "bot";
+            document.getElementById("gameMsg").innerHTML = "🎴 आपने कार्ड रखा | Bot की बारी...";
+            updateGameUI();
+            botPlay();
+        } else {
+            currentTurn = "player";
+            updateGameUI();
         }
-        gameState.currentTurn = gameState.currentTurn === 1 ? 2 : 1;
-        document.getElementById("gameMsg").innerHTML = `अब खिलाड़ी ${gameState.currentTurn} की बारी`;
+    }
+    
+    function resetGame() {
+        playerCol = [];
+        botCol = [];
+        currentTurn = "player";
+        gameActive = true;
+        updateGameUI();
+        document.getElementById("gameMsg").innerHTML = "🔄 नई गेम शुरू! आपकी बारी 🔄";
     }
     
     function refreshUserList() {
@@ -881,21 +443,64 @@
         listDiv.innerHTML = "";
         for(let [name, data] of Object.entries(users)) {
             let div = document.createElement("div");
-            div.className = "user-item";
+            div.className = "request-item";
             div.innerHTML = `<span><strong>${name}</strong> | 📦 ${data.cards} | 🏆 ${data.wins || 0}</span>
-                <div><button class="btn" onclick="adminAddCards('${name}', 10)">+10</button>
-                <button class="btn btn-danger" onclick="adminRemoveUser('${name}')">हटाएं</button></div>`;
+                <div><button class="btn" onclick="adminAddCards('${name}', 20)">+20</button></div>`;
             listDiv.appendChild(div);
+        }
+    }
+    
+    function refreshRequests() {
+        let reqDiv = document.getElementById("pendingRequests");
+        reqDiv.innerHTML = "";
+        if(pendingRequests.length === 0) {
+            reqDiv.innerHTML = "<p>कोई पेंडिंग रिक्वेस्ट नहीं</p>";
+            return;
+        }
+        for(let i=0; i<pendingRequests.length; i++) {
+            let req = pendingRequests[i];
+            let div = document.createElement("div");
+            div.className = "request-item";
+            div.innerHTML = `
+                <span><strong>${req.user}</strong> | 🪙 ${req.coins} coin = 📦 ${req.cards} cards</span>
+                <div>
+                    <button class="btn" onclick="approveRequest(${i})">✅ Approve</button>
+                    <button class="btn btn-danger" onclick="denyRequest(${i})">❌ Deny</button>
+                </div>
+            `;
+            reqDiv.appendChild(div);
         }
     }
     
     window.adminAddCards = function(name, amt) {
         if(users[name]) { users[name].cards += amt; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("userBalance").innerText = users[name].cards; }
     };
-    window.adminRemoveUser = function(name) { delete users[name]; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("logoutBtn").click(); };
+    
+    window.approveRequest = function(index) {
+        let req = pendingRequests[index];
+        if(req && users[req.user]) {
+            users[req.user].cards += req.cards;
+            saveData();
+            if(currentGameUser === req.user) {
+                document.getElementById("userBalance").innerText = users[req.user].cards;
+            }
+        }
+        pendingRequests.splice(index, 1);
+        saveData();
+        refreshRequests();
+        refreshUserList();
+        alert("रिक्वेस्ट approve कर दी गई");
+    };
+    
+    window.denyRequest = function(index) {
+        pendingRequests.splice(index, 1);
+        saveData();
+        refreshRequests();
+        alert("रिक्वेस्ट deny कर दी गई");
+    };
     
     function doLogin(username) {
-        if(!users[username]) users[username] = { cards: 10, wins: 0 };
+        if(!users[username]) users[username] = { cards: 20, wins: 0 };
         currentUser = currentGameUser = username;
         saveCurrentUser(username);
         document.getElementById("currentUsername").innerText = username;
@@ -903,8 +508,7 @@
         document.getElementById("userWins").innerText = users[username].wins || 0;
         document.getElementById("userLoginArea").style.display = "none";
         document.getElementById("userGameArea").style.display = "block";
-        gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
-        updateGameUI();
+        resetGame();
         saveData();
     }
     
@@ -913,8 +517,45 @@
         saveCurrentUser(null);
         document.getElementById("userLoginArea").style.display = "block";
         document.getElementById("userGameArea").style.display = "none";
-        gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
+        playerCol = [];
+        botCol = [];
     }
+    
+    // Buy Card
+    document.getElementById("buyCardBtn")?.addEventListener("click", () => {
+        let phone = prompt("कार्ड खरीदने के लिए इस नंबर पर 1 coin भेजें: 6264130426\n\nभेजने के बाद नीचे 'OK' दबाएं और हमें अपना नंबर बताएं");
+        if(phone) {
+            alert("✅ आपकी रिक्वेस्ट एडमिन को भेज दी गई है। एडमिन approve करने के बाद कार्ड मिल जाएंगे।\n📞 नंबर: 6264130426");
+            // Send request to admin
+            let coins = 1;
+            let cards = 20;
+            pendingRequests.push({
+                user: currentGameUser,
+                coins: coins,
+                cards: cards,
+                phone: phone,
+                time: new Date().toISOString()
+            });
+            saveData();
+            if(adminLoggedIn) refreshRequests();
+            alert("रिक्वेस्ट एडमिन को भेज दी गई!");
+        }
+    });
+    
+    document.getElementById("sendRequestBtn")?.addEventListener("click", () => {
+        let msg = prompt("एडमिन को क्या संदेश भेजना है?\n(जैसे: मुझे कार्ड चाहिए, या कोई समस्या)");
+        if(msg) {
+            pendingRequests.push({
+                user: currentGameUser,
+                type: "message",
+                message: msg,
+                time: new Date().toISOString()
+            });
+            saveData();
+            if(adminLoggedIn) refreshRequests();
+            alert("आपका संदेश एडमिन को भेज दिया गया!");
+        }
+    });
     
     document.getElementById("loginBtn").onclick = () => {
         let name = document.getElementById("loginUsername").value.trim();
@@ -922,12 +563,16 @@
         doLogin(name);
     };
     document.getElementById("logoutBtn").onclick = doLogout;
-    document.getElementById("playBtn").onclick = placeCard;
+    document.getElementById("playBtn").onclick = playerPlay;
+    document.getElementById("resetGameBtn").onclick = resetGame;
+    
+    // Admin
     document.getElementById("adminLoginBtn").onclick = () => {
         if(document.getElementById("adminPass").value === "admin123") {
             adminLoggedIn = true;
             document.getElementById("adminContent").style.display = "block";
             refreshUserList();
+            refreshRequests();
         } else alert("गलत पासवर्ड");
     };
     document.getElementById("addCardsBtn").onclick = () => {
@@ -935,15 +580,16 @@
         let qty = parseInt(document.getElementById("addCards").value);
         if(name && users[name] && qty>0) { users[name].cards += qty; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("userBalance").innerText = users[name].cards; }
     };
-    document.getElementById("saveSettingsBtn").onclick = () => { winCut = parseInt(document.getElementById("cutPerWin").value); saveData(); alert("सेटिंग सेव हो गई"); };
-    document.getElementById("resetAllBtn").onclick = () => { 
+    document.getElementById("resetAllBtn").onclick = () => {
         if(confirm("सारा डाटा डिलीट हो जाएगा!")) {
-            localStorage.removeItem("matchbox_game_data");
-            localStorage.removeItem("current_loggedin_user");
-            users = {}; winCut = 1;
+            localStorage.removeItem("matchbox_game_data_v2");
+            localStorage.removeItem("current_player_user");
+            users = {};
+            pendingRequests = [];
             loadData();
             doLogout();
             refreshUserList();
+            refreshRequests();
             alert("रीसेट हो गया");
         }
     };
@@ -954,12 +600,14 @@
             btn.classList.add("active");
             document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
             document.getElementById(btn.dataset.tab + "Panel").classList.add("active");
-            if(btn.dataset.tab === "admin" && adminLoggedIn) refreshUserList();
+            if(btn.dataset.tab === "admin" && adminLoggedIn) {
+                refreshUserList();
+                refreshRequests();
+            }
         };
     });
     
     loadData();
-    // Auto login if saved user exists
     let savedUser = getSavedUser();
     if(savedUser && users[savedUser]) {
         doLogin(savedUser);
