@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Matchbox Game - Admin + User Panel</title>
+    <title>Matchbox Game - Admin + User Panel | Auto Login</title>
     <style>
         * {
             user-select: none;
@@ -24,6 +24,7 @@
             gap: 10px;
             margin-bottom: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .tab-btn {
             background: #2f4a22;
@@ -89,6 +90,7 @@
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            gap: 10px;
         }
         .balance {
             background: #2f4a22;
@@ -146,6 +148,9 @@
             z-index: 1000;
             text-align: center;
         }
+        @media (max-width: 700px) {
+            .column { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -162,7 +167,7 @@
                 <h2>🎲 यूजर लॉगिन</h2>
                 <input type="text" id="loginUsername" placeholder="यूजरनेम">
                 <button class="btn" id="loginBtn">लॉगिन / नया अकाउंट</button>
-                <p>नए यूजर को 10 फ्री कार्ड</p>
+                <p>नए यूजर को 10 फ्री कार्ड | Refresh पर भी login रहेगा ✅</p>
             </div>
         </div>
         <div id="userGameArea" style="display:none;">
@@ -187,7 +192,7 @@
             <div style="text-align:center;">
                 <button class="action-btn" id="playBtn">🎴 रखो</button>
             </div>
-            <div id="gameMsg" style="text-align:center; margin-top:15px; background:#201f12cc; padding:10px; border-radius:40px; color:#ffefbc;">👇 'रखो' दबाएं</div>
+            <div id="gameMsg" style="text-align:center; margin-top:15px; background:#201f12cc; padding:10px; border-radius:40px; color:#ffefbc;">👇 'रखो' दबाएं | हर चाल पर 1 कार्ड कटेगा | जीतने पर +कार्ड</div>
         </div>
     </div>
 
@@ -215,7 +220,7 @@
                     <label>जीत पर कटौती: </label>
                     <input type="number" id="cutPerWin" value="1">
                     <button class="btn" id="saveSettingsBtn">सेव करें</button>
-                    <button class="btn btn-danger" id="resetAllBtn">रीसेट</button>
+                    <button class="btn btn-danger" id="resetAllBtn">सारा डाटा रीसेट</button>
                 </div>
             </div>
         </div>
@@ -253,6 +258,16 @@
     
     function saveData() {
         localStorage.setItem("matchbox_game_data", JSON.stringify({ users, winCut }));
+    }
+    
+    // Save current login session
+    function saveCurrentUser(username) {
+        if(username) localStorage.setItem("current_loggedin_user", username);
+        else localStorage.removeItem("current_loggedin_user");
+    }
+    
+    function getSavedUser() {
+        return localStorage.getItem("current_loggedin_user");
     }
     
     function renderCardUI(card) {
@@ -320,7 +335,7 @@
     function placeCard() {
         if(!currentGameUser || !users[currentGameUser]) return;
         if(users[currentGameUser].cards <= 0) {
-            document.getElementById("gameMsg").innerHTML = "⚠️ कोई कार्ड नहीं!";
+            document.getElementById("gameMsg").innerHTML = "⚠️ कोई कार्ड नहीं! एडमिन से कार्ड लो ⚠️";
             return;
         }
         let newCard = randomCard();
@@ -363,25 +378,34 @@
     };
     window.adminRemoveUser = function(name) { delete users[name]; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("logoutBtn").click(); };
     
-    document.getElementById("loginBtn").onclick = () => {
-        let name = document.getElementById("loginUsername").value.trim();
-        if(!name) return;
-        if(!users[name]) users[name] = { cards: 10, wins: 0 };
-        currentUser = currentGameUser = name;
-        document.getElementById("currentUsername").innerText = name;
-        document.getElementById("userBalance").innerText = users[name].cards;
-        document.getElementById("userWins").innerText = users[name].wins || 0;
+    function doLogin(username) {
+        if(!users[username]) users[username] = { cards: 10, wins: 0 };
+        currentUser = currentGameUser = username;
+        saveCurrentUser(username);
+        document.getElementById("currentUsername").innerText = username;
+        document.getElementById("userBalance").innerText = users[username].cards;
+        document.getElementById("userWins").innerText = users[username].wins || 0;
         document.getElementById("userLoginArea").style.display = "none";
         document.getElementById("userGameArea").style.display = "block";
         gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
         updateGameUI();
         saveData();
-    };
-    document.getElementById("logoutBtn").onclick = () => {
+    }
+    
+    function doLogout() {
         currentUser = currentGameUser = null;
+        saveCurrentUser(null);
         document.getElementById("userLoginArea").style.display = "block";
         document.getElementById("userGameArea").style.display = "none";
+        gameState = { col1: [], col2: [], currentTurn: 1, gameActive: true };
+    }
+    
+    document.getElementById("loginBtn").onclick = () => {
+        let name = document.getElementById("loginUsername").value.trim();
+        if(!name) return;
+        doLogin(name);
     };
+    document.getElementById("logoutBtn").onclick = doLogout;
     document.getElementById("playBtn").onclick = placeCard;
     document.getElementById("adminLoginBtn").onclick = () => {
         if(document.getElementById("adminPass").value === "admin123") {
@@ -395,8 +419,18 @@
         let qty = parseInt(document.getElementById("addCards").value);
         if(name && users[name] && qty>0) { users[name].cards += qty; saveData(); refreshUserList(); if(currentGameUser === name) document.getElementById("userBalance").innerText = users[name].cards; }
     };
-    document.getElementById("saveSettingsBtn").onclick = () => { winCut = parseInt(document.getElementById("cutPerWin").value); saveData(); alert("सेव हो गया"); };
-    document.getElementById("resetAllBtn").onclick = () => { localStorage.removeItem("matchbox_game_data"); users = {}; winCut = 1; loadData(); refreshUserList(); alert("रीसेट"); };
+    document.getElementById("saveSettingsBtn").onclick = () => { winCut = parseInt(document.getElementById("cutPerWin").value); saveData(); alert("सेटिंग सेव हो गई"); };
+    document.getElementById("resetAllBtn").onclick = () => { 
+        if(confirm("सारा डाटा डिलीट हो जाएगा!")) {
+            localStorage.removeItem("matchbox_game_data");
+            localStorage.removeItem("current_loggedin_user");
+            users = {}; winCut = 1;
+            loadData();
+            doLogout();
+            refreshUserList();
+            alert("रीसेट हो गया");
+        }
+    };
     
     document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.onclick = () => {
@@ -407,7 +441,13 @@
             if(btn.dataset.tab === "admin" && adminLoggedIn) refreshUserList();
         };
     });
+    
     loadData();
+    // Auto login if saved user exists
+    let savedUser = getSavedUser();
+    if(savedUser && users[savedUser]) {
+        doLogin(savedUser);
+    }
 </script>
 </body>
 </html>
