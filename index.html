@@ -2,10 +2,550 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Matchbox Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Matchbox Game - 10 Cards | Winner Cards Dikhenge</title>
+    <style>
+        * {
+            user-select: none;
+            touch-action: manipulation;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #1a3d2e, #0e2a1c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            margin: 0;
+            padding: 16px;
+            position: relative;
+        }
+        .game-container {
+            background: #e8dbbf;
+            background-image: radial-gradient(circle at 20% 35%, rgba(190, 150, 80, 0.15) 2%, transparent 2.5%);
+            background-size: 30px 30px;
+            border-radius: 60px 60px 45px 45px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5), inset 0 1px 5px rgba(255,245,200,0.9);
+            padding: 18px 16px 25px;
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        h1 {
+            font-size: 1.7rem;
+            margin: 0 0 4px;
+            color: #2c2a1a;
+            text-shadow: 2px 2px 0 #e1c87a;
+        }
+        .sub {
+            background: #2b3a21;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            color: #f7ecb0;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+        .players-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        .player-badge {
+            background: #f5ebd3;
+            border-radius: 70px;
+            padding: 5px 15px;
+            flex: 1;
+            max-width: 220px;
+            box-shadow: 0 5px 0 #af763c;
+        }
+        .player-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: #3a2c18;
+            border-radius: 40px;
+            padding: 2px 12px;
+            color: #ffefb5;
+        }
+        .deck-count {
+            background: #b07638;
+            border-radius: 30px;
+            padding: 6px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff2cc;
+            margin-top: 6px;
+        }
+        .turn-area {
+            background: #2f4a22;
+            padding: 8px;
+            border-radius: 80px;
+            margin: 8px 0 20px;
+            color: #fef0bb;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+        .table-dual {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .column {
+            background: #b58750;
+            border-radius: 35px;
+            padding: 12px 8px;
+            width: 43%;
+            min-width: 240px;
+            box-shadow: inset 0 0 0 3px #f3e2b0, 0 8px 12px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .column-title {
+            font-weight: bold;
+            background: #4a2c15;
+            border-radius: 40px;
+            display: inline-block;
+            padding: 4px 18px;
+            color: #fbefb0;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        .stack-area {
+            min-height: 180px;
+            background: #c99f60;
+            border-radius: 28px;
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .card-stack-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            background: #2c2416cc;
+            color: #ffecb3;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 25px;
+            backdrop-filter: blur(4px);
+        }
+        .top-card {
+            background: #fff5e2;
+            width: 110px;
+            border-radius: 20px;
+            padding: 12px 6px;
+            box-shadow: 0 6px 0 #8b551f;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid #f7e3b0;
+            margin: 8px auto;
+        }
+        .brand-icon {
+            font-size: 2.2rem;
+        }
+        .brand-name {
+            font-size: 0.8rem;
+            font-weight: bold;
+            background: #f0ddb5;
+            border-radius: 30px;
+            padding: 2px 8px;
+            margin-top: 6px;
+        }
+        .face-badge {
+            font-size: 0.7rem;
+            background: #a05f2c;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            color: white;
+            margin-top: 6px;
+        }
+        .empty-message {
+            color: #3a2a12;
+            font-weight: bold;
+            background: #e7c893;
+            padding: 12px;
+            border-radius: 40px;
+        }
+        .action-btn {
+            background: #f0a035;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 10px 16px;
+            border-radius: 60px;
+            width: 70%;
+            color: #291d07;
+            box-shadow: 0 6px 0 #774015;
+            cursor: pointer;
+            margin: 8px auto;
+            display: block;
+            transition: 0.03s linear;
+        }
+        .action-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #774015;
+        }
+        .reset-btn {
+            background: #487a42;
+            box-shadow: 0 5px 0 #2a5327;
+            color: #faf0c5;
+            width: 50%;
+            font-size: 1.2rem;
+        }
+        .message-box {
+            background: #201f12cc;
+            border-radius: 40px;
+            padding: 10px;
+            color: #ffefbc;
+            font-weight: bold;
+            margin-top: 20px;
+            backdrop-filter: blur(3px);
+            font-size: 0.8rem;
+        }
+        .winner-cards-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(145deg, #1e4d2e, #0f321f);
+            padding: 25px 35px;
+            border-radius: 60px;
+            z-index: 1000;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,200,0.5);
+            border: 4px solid #ffd966;
+            text-align: center;
+            transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+            min-width: 320px;
+        }
+        .winner-cards-overlay.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .match-title {
+            color: #ffef9e;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 #2a471f;
+        }
+        .cards-match-row {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .match-card-display {
+            background: #fff5e2;
+            width: 130px;
+            border-radius: 24px;
+            padding: 15px 8px;
+            box-shadow: 0 10px 0 #7a4a1a;
+            text-align: center;
+        }
+        .vs-badge {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd966;
+            text-shadow: 2px 2px 0 #3a2a10;
+        }
+        .winner-name {
+            margin-top: 18px;
+            background: #ffb347;
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 50px;
+            color: #2c1a0a;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        @media (max-width: 650px) {
+            .top-card { width: 85px; padding: 8px 4px; }
+            .brand-icon { font-size: 1.6rem; }
+            .match-card-display { width: 100px; padding: 10px 4px; }
+            .match-card-display .brand-icon { font-size: 1.8rem; }
+            .winner-cards-overlay { padding: 18px 20px; min-width: 280px; }
+            .match-title { font-size: 1rem; }
+        }
+        footer {
+            font-size: 0.6rem;
+            margin-top: 12px;
+            opacity: 0.8;
+        }
+        button {
+            border: none;
+            background: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>🎮 माचिस का खेल</h1>
-    <p>गेम लोड हो रहा है... 🧯🔥</p>
+
+<div class="game-container">
+    <h1>🧯 माचिस का खेल 🧯</h1>
+    <div class="sub">📦 10-10 कार्ड • जीतने पर दिखेंगे कौन से कार्ड मिले • आवाज़</div>
+
+    <div class="players-bar">
+        <div class="player-badge"><div class="player-name">👤 खिलाड़ी 1</div><div class="deck-count" id="p1Count">📦 0</div></div>
+        <div class="player-badge"><div class="player-name">👥 खिलाड़ी 2</div><div class="deck-count" id="p2Count">📦 0</div></div>
+    </div>
+
+    <div class="turn-area" id="turnText">🎲 खिलाड़ी 1 की बारी</div>
+
+    <div class="table-dual">
+        <div class="column">
+            <div class="column-title">🎴 खिलाड़ी 1 का स्टैक</div>
+            <div class="stack-area" id="col1Area">
+                <div id="col1Top" style="display: flex; justify-content: center;"></div>
+                <div id="col1Hint" class="card-stack-hint"></div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="column-title">🎴 खिलाड़ी 2 का स्टैक</div>
+            <div class="stack-area" id="col2Area">
+                <div id="col2Top" style="display: flex; justify-content: center;"></div>
+                <div id="col2Hint" class="card-stack-hint"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" id="placeBtn">🎴 रखो (बिना देखे)</button>
+    <button class="action-btn reset-btn" id="resetBtn">🔄 नया खेल</button>
+    <div class="message-box" id="gameMsg">
+        🔊 जीतने पर दिखेगा कौन से दो कार्ड एक जैसे थे (5 सेकंड तक) + आवाज़
+    </div>
+    <footer>🔥 Rajshree · Chameli · Mangaldeep · 786 · Kohinoor · Shalimar</footer>
+</div>
+
+<div id="winnerCardsOverlay" class="winner-cards-overlay">
+    <div class="match-title">🎯 मैच करने वाले कार्ड 🎯</div>
+    <div class="cards-match-row" id="matchCardsRow"></div>
+    <div id="winnerNameDisplay" class="winner-name"></div>
+</div>
+
+<script>
+    // AUDIO
+    function playMatchWinSound() {
+        try {
+            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let now = audioCtx.currentTime;
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 659.25;
+            gain.gain.value = 0.25;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.6);
+            osc.stop(now + 0.6);
+            
+            let osc2 = audioCtx.createOscillator();
+            let gain2 = audioCtx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            osc2.frequency.value = 880;
+            gain2.gain.value = 0.25;
+            osc2.start(now + 0.2);
+            gain2.gain.exponentialRampToValueAtTime(0.00001, now + 0.8);
+            osc2.stop(now + 0.8);
+        } catch(e) {}
+    }
+    
+    // BRANDS
+    const BRANDS = [
+        { id: "rajshree", name: "Rajshree", frontIcon: "🕉️🔥", frontDesc: "मंगलम", backIcon: "📜✨", backDesc: "अगरबत्ती" },
+        { id: "chameli", name: "Chameli", frontIcon: "🌼🌿", frontDesc: "चमेली", backIcon: "🏷️📦", backDesc: "सुरभि" },
+        { id: "mangaldeep", name: "Mangaldeep", frontIcon: "🪔✨", frontDesc: "मंगल दीप", backIcon: "🔖🧾", backDesc: "धूपबत्ती" },
+        { id: "seveneightysix", name: "786", frontIcon: "☪️🔥", frontDesc: "बरकत", backIcon: "📌📦", backDesc: "माचिस" },
+        { id: "kohinoor", name: "Kohinoor", frontIcon: "💎🔥", frontDesc: "कोहिनूर", backIcon: "🎴🧾", backDesc: "सुपर सेफ्टी" },
+        { id: "shalimar", name: "Shalimar", frontIcon: "🌺🏞️", frontDesc: "शालीमार", backIcon: "🏷️📦", backDesc: "आगरा" }
+    ];
+
+    function getBrand(id) { return BRANDS.find(b=>b.id===id); }
+
+    function generateDeck() {
+        let deck = [];
+        for(let i=0; i<20; i++) {
+            let randomBrand = BRANDS[Math.floor(Math.random() * BRANDS.length)].id;
+            let face = Math.random() < 0.5 ? "front" : "back";
+            deck.push({ brandId: randomBrand, face: face });
+        }
+        for(let i=deck.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+        return deck;
+    }
+
+    let p1Hand = [], p2Hand = [], col1 = [], col2 = [];
+    let currentTurn = 1;
+    let gameActive = true;
+
+    function renderCard(mb, size="normal") {
+        let brand = getBrand(mb.brandId);
+        if(!brand) return `<div class="top-card">?</div>`;
+        let isFront = (mb.face === "front");
+        let icon = isFront ? brand.frontIcon : brand.backIcon;
+        let desc = isFront ? brand.frontDesc : brand.backDesc;
+        return `
+            <div class="top-card" style="width:110px;">
+                <div class="brand-icon" style="font-size:2.2rem;">${icon}</div>
+                <div class="brand-name">${brand.name}</div>
+                <div class="face-badge">${isFront ? "🔥 फ्रंट" : "⚙️ बैक"}</div>
+                <div style="font-size:0.6rem;">${desc}</div>
+            </div>
+        `;
+    }
+
+    function showMatchCards(card1, card2, winnerPlayer) {
+        let brand1 = getBrand(card1.brandId);
+        let brand2 = getBrand(card2.brandId);
+        let isFront1 = card1.face === "front";
+        let isFront2 = card2.face === "front";
+        
+        let cardHtml = `
+            <div class="match-card-display">
+                <div class="brand-icon" style="font-size:2.5rem;">${isFront1 ? brand1.frontIcon : brand1.backIcon}</div>
+                <div class="brand-name">${brand1.name}</div>
+                <div class="face-badge">${isFront1 ? "🔥 फ्रंट" : "⚙️ बैक"}</div>
+            </div>
+            <div class="vs-badge">⚡ = ⚡</div>
+            <div class="match-card-display">
+                <div class="brand-icon" style="font-size:2.5rem;">${isFront2 ? brand2.frontIcon : brand2.backIcon}</div>
+                <div class="brand-name">${brand2.name}</div>
+                <div class="face-badge">${isFront2 ? "🔥 फ्रंट" : "⚙️ बैक"}</div>
+            </div>
+        `;
+        document.getElementById("matchCardsRow").innerHTML = cardHtml;
+        document.getElementById("winnerNameDisplay").innerHTML = `🏆 खिलाड़ी ${winnerPlayer} जीत गया! 🏆`;
+        let overlay = document.getElementById("winnerCardsOverlay");
+        overlay.classList.add("show");
+        playMatchWinSound();
+        setTimeout(() => {
+            overlay.classList.remove("show");
+        }, 5000);
+    }
+
+    function updateUI() {
+        document.getElementById("p1Count").innerHTML = `📦 ${p1Hand.length}`;
+        document.getElementById("p2Count").innerHTML = `📦 ${p2Hand.length}`;
+        
+        let col1TopDiv = document.getElementById("col1Top");
+        let col1HintDiv = document.getElementById("col1Hint");
+        if(col1.length === 0) {
+            col1TopDiv.innerHTML = `<div class="empty-message">⬜ कोई कार्ड नहीं</div>`;
+            col1HintDiv.innerHTML = "";
+        } else {
+            let top = col1[col1.length-1];
+            col1TopDiv.innerHTML = renderCard(top);
+            if(col1.length > 1) col1HintDiv.innerHTML = `📚 +${col1.length-1} और नीचे (छुपे)`;
+            else col1HintDiv.innerHTML = `✨ सिर्फ यही एक कार्ड`;
+        }
+        
+        let col2TopDiv = document.getElementById("col2Top");
+        let col2HintDiv = document.getElementById("col2Hint");
+        if(col2.length === 0) {
+            col2TopDiv.innerHTML = `<div class="empty-message">⬜ कोई कार्ड नहीं</div>`;
+            col2HintDiv.innerHTML = "";
+        } else {
+            let top = col2[col2.length-1];
+            col2TopDiv.innerHTML = renderCard(top);
+            if(col2.length > 1) col2HintDiv.innerHTML = `📚 +${col2.length-1} और नीचे (छुपे)`;
+            else col2HintDiv.innerHTML = `✨ सिर्फ यही एक कार्ड`;
+        }
+        
+        const turnDiv = document.getElementById("turnText");
+        if(currentTurn === 1) { turnDiv.innerHTML = "🎲 खिलाड़ी 1 की बारी — 'रखो' दबाएं"; turnDiv.style.background = "#3f6030"; }
+        else { turnDiv.innerHTML = "🎯 खिलाड़ी 2 की बारी — 'रखो' दबाएं"; turnDiv.style.background = "#785e34"; }
+        
+        if(!gameActive) return;
+        if(p1Hand.length === 0 && col1.length === 0 && col2.length === 0 && p2Hand.length === 0) {
+            document.getElementById("gameMsg").innerHTML = "🏆 गेम बराबरी पर खत्म! 🏆";
+            gameActive=false;
+        }
+        else if(p1Hand.length === 0 && col1.length === 0 && col2.length === 0) {
+            document.getElementById("gameMsg").innerHTML = "🎉🎉 खिलाड़ी 2 जीता! 🎉🎉";
+            gameActive=false;
+        }
+        else if(p2Hand.length === 0 && col1.length === 0 && col2.length === 0) {
+            document.getElementById("gameMsg").innerHTML = "🎉🎉 खिलाड़ी 1 जीता! 🎉🎉";
+            gameActive=false;
+        }
+    }
+    
+    function applyMatch(winner, cardA, cardB) {
+        let allCards = [...col1, ...col2];
+        if(winner === 1) p1Hand.push(...allCards.map(c=>({brandId:c.brandId, face:c.face})));
+        else p2Hand.push(...allCards.map(c=>({brandId:c.brandId, face:c.face})));
+        col1 = []; col2 = [];
+        
+        showMatchCards(cardA, cardB, winner);
+        
+        let msg = `💥 मैच! दोनों के ऊपर वाला SAME था 💥<br>खिलाड़ी ${winner} ने ${allCards.length} माचिस जीते।`;
+        document.getElementById("gameMsg").innerHTML = msg;
+        setTimeout(() => {
+            if(gameActive) document.getElementById("gameMsg").innerHTML = "🤫 चुपचाप खेलो। बिना देखे रखो।";
+        }, 4000);
+        updateUI();
+    }
+    
+    function placeCard() {
+        if(!gameActive) { document.getElementById("gameMsg").innerHTML = "❌ खेल खत्म। 'नया खेल' दबाएं।"; return; }
+        let currentHand = (currentTurn === 1) ? p1Hand : p2Hand;
+        if(currentHand.length === 0) {
+            document.getElementById("gameMsg").innerHTML = `⚠️ खिलाड़ी ${currentTurn} के पास माचिस नहीं!`;
+            if((currentTurn===1 && p2Hand.length===0) || (currentTurn===2 && p1Hand.length===0)) gameActive=false;
+            updateUI();
+            return;
+        }
+        let played = currentHand.shift();
+        if(currentTurn === 1) col1.push(played);
+        else col2.push(played);
+        updateUI();
+        
+        if(col1.length > 0 && col2.length > 0) {
+            let top1 = col1[col1.length-1];
+            let top2 = col2[col2.length-1];
+            if(top1.brandId === top2.brandId && top1.face === top2.face) {
+                let winner = currentTurn;
+                let cardA = top1;
+                let cardB = top2;
+                currentTurn = (currentTurn === 1) ? 2 : 1;
+                applyMatch(winner, cardA, cardB);
+                return;
+            }
+        }
+        currentTurn = (currentTurn === 1) ? 2 : 1;
+        updateUI();
+    }
+    
+    function resetGame() {
+        let fullDeck = generateDeck();
+        p1Hand = fullDeck.slice(0,10);
+        p2Hand = fullDeck.slice(10,20);
+        col1 = []; col2 = [];
+        currentTurn = 1;
+        gameActive = true;
+        updateUI();
+        document.getElementById("gameMsg").innerHTML = "🔄 नया खेल! 10-10 कार्ड। जीतने पर 5 सेकंड तक दिखेंगे मैच करने वाले कार्ड + आवाज़ 🔄";
+    }
+    
+    document.getElementById("placeBtn").addEventListener("click", () => { if(gameActive) placeCard(); else document.getElementById("gameMsg").innerHTML="पहले 'नया खेल' दबाओ।"; });
+    document.getElementById("resetBtn").addEventListener("click", resetGame);
+    
+    document.body.addEventListener("click", function initAudio() {
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx.resume().then(() => { console.log("audio ready"); });
+        document.body.removeEventListener("click", initAudio);
+    }, { once: true });
+    
+    resetGame();
+</script>
 </body>
 </html>
